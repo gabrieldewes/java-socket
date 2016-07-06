@@ -20,28 +20,28 @@ public class ChatServer extends Thread {
     private String nomeCliente;
     private static List<String> LISTA_DE_NOMES = new ArrayList<String>();
 
-    public ChatServer(Socket socket) {
+    private ChatServer(Socket socket) {
         this.conexao = socket;
     }
-    public boolean armazena(String newName) {
-        for (int i = 0; i < LISTA_DE_NOMES.size(); i++) {
-            if (LISTA_DE_NOMES.get(i).equals(newName))
+    private boolean armazena(String newName) {
+        for (String LISTA_DE_NOME : LISTA_DE_NOMES) {
+            if (LISTA_DE_NOME.equals(newName))
                 return true;
         }
         LISTA_DE_NOMES.add(newName);
         return false;
     }
-    public void remove(String oldName) {
+    private void remove(String oldName) {
         for (int i = 0; i < LISTA_DE_NOMES.size(); i++) {
             if (LISTA_DE_NOMES.get(i).equals(oldName))
                 LISTA_DE_NOMES.remove(oldName);
         }
     }
     public static void main(String args[]) {
-        MAP_CLIENTES = new HashMap<String, PrintStream>();
+        MAP_CLIENTES = new HashMap<>();
         try {
             ServerSocket server = new ServerSocket(5555);
-            System.out.println("ServidorSocket rodando na porta 5555");
+            System.out.println("Servidor Socket rodando na porta 5555");
             while (true) {
                 Socket conexao = server.accept();
                 Thread t = new ChatServer(conexao);
@@ -61,7 +61,8 @@ public class ChatServer extends Thread {
                 saida.println("Este nome ja existe! Conecte novamente com outro Nome.");
                 this.conexao.close();
                 return;
-            } else {
+            }
+            else {
                 //mostra o nome do cliente conectado ao servidor
                 System.out.println(this.nomeCliente + " : Conectado ao Servidor!");
                 //Quando o cliente se conectar recebe todos que estão conectados
@@ -74,7 +75,7 @@ public class ChatServer extends Thread {
             //A chave será o nome e valor o printstream
             MAP_CLIENTES.put(this.nomeCliente, saida);
             String[] msg = entrada.readLine().split(":");
-            while (msg != null && !(msg[0].trim().equals(""))) {
+            while (!msg[0].trim().equals("")) {
                 send(saida, " escreveu: ", msg);
                 msg = entrada.readLine().split(":");
             }
@@ -85,15 +86,14 @@ public class ChatServer extends Thread {
             MAP_CLIENTES.remove(this.nomeCliente);
             this.conexao.close();
         } catch (IOException e) {
-            System.out.println("Falha na Conexao... .. ." + " IOException: " + e);
+            System.out.println("Falha na Conexão! IOException: " + e);
         }
     }
     /**
      * Se o array da msg tiver tamanho igual a 1, então envia para todos
      * Se o tamanho for 2, envia apenas para o cliente escolhido
      */
-    public void send(PrintStream saida, String acao, String[] msg) {
-        out:
+    private void send(PrintStream saida, String acao, String[] msg) {
         for (Map.Entry<String, PrintStream> cliente : MAP_CLIENTES.entrySet()) {
             PrintStream chat = cliente.getValue();
             if (chat != saida) {
@@ -102,7 +102,7 @@ public class ChatServer extends Thread {
                 } else {
                     if (msg[1].equalsIgnoreCase(cliente.getKey())) {
                         chat.println(this.nomeCliente + acao + msg[0]);
-                        break out;
+                        break;
                     }
                 }
             }

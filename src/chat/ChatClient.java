@@ -13,7 +13,7 @@ public class ChatClient extends Thread {
     // parte que controla a recepção de mensagens do cliente
     private Socket conexao;
     // construtor que recebe o socket do cliente
-    public ChatClient(Socket socket) {
+    private ChatClient(Socket socket) {
         this.conexao = socket;
     }
     public static void main(String args[])
